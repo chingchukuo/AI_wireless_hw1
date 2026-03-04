@@ -1,10 +1,6 @@
 import numpy as np
 
-X = np.array([[1.23, 0.94, 0.83, 0.2], [0.34, 0.44, 0.37, 0.3], [0.34, 1.14, 2.34, 1.24], [0.49, 0.18, 2.04, 1.42]])
-W = np.array([ [1, 0.5], [0.3, 1] ])
-
-S = 1
-
+# Exercise 1.4
 def conv2d(X, W, S, P):
     X = zero_padding(X, P)
     os = int( np.floor( (X.shape[0]-W.shape[0]) / S ) + 1 )
@@ -30,12 +26,47 @@ def zero_padding(x, p):
 
     return out
 
-O = conv2d(X, W, 1, 0); print(O)
-O = conv2d(X, W, 2, 0); print(O)
-O = conv2d(X, W, 1, 1); print(O)
-O = conv2d(X, W, 2, 1); print(O)
+def max_pooling(X, S):
+    ui, vi = X.shape
+    uo, vo = ui//S, vi//S
+    out = np.zeros((uo, vo))
+    for ii in range(uo):
+        for jj in range(vo):
+            patch = X[ii*S:ii*S+S, jj*S:jj*S+S]
+            out[ii, jj] = patch.max()
+    return out
 
+def avg_pooling(X, S):
+    ui, vi = X.shape
+    uo, vo = ui//S, vi//S
+    out = np.zeros((uo, vo))
+    for ii in range(uo):
+        for jj in range(vo):
+            patch = X[ii*S:ii*S+S, jj*S:jj*S+S]
+            out[ii, jj] = patch.mean()
+    return out
 
+# Exercise 1.4 (a)
+print("Exercise 1.4 (a):")
+X = np.array([[1.23, 0.94, 0.83, 0.2], [0.34, 0.44, 0.37, 0.3],
+              [0.34, 1.14, 2.34, 1.24], [0.49, 0.18, 2.04, 1.42]])
+W = np.array([ [1, 0.5], [0.3, 1] ])
+S, P = 1, 0
+O = conv2d(X, W, S, P); print(O)
+S, P = 2, 0
+O = conv2d(X, W, S, P); print(O)
+
+# Exercise 1.4 (b)
+print("Exercise 1.4 (b):")
+S, P = 1, 1
+O1 = conv2d(X, W, S, P); print(O1)
+S, P = 2, 1
+O2 = conv2d(X, W, S, P); print(O2)
+om = max_pooling(O1, 2); print(om)
+oa = avg_pooling(O1, 2); print(oa)
+
+# Exercise 1.4 (c)
+print("Exercise 1.4 (c):")
 R = np.array([[123, 94, 83], [34, 44, 37], [34, 114, 234]])
 G = np.array([[123, 94, 20], [11, 30, 22], [12, 40, 23]])
 B = np.array([[123, 94, 83], [34, 44, 37], [34, 114, 234]])
@@ -48,3 +79,4 @@ print(O1R+O1G+O1B)
 O2R = conv2d(R, W2, 1, 1)
 O2G = conv2d(G, W2, 1, 1)
 O2B = conv2d(B, W2, 1, 1)
+print(O2R+O2G+O2B)
